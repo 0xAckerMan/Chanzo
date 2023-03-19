@@ -24,17 +24,13 @@
      <title>Filtered Google Maps</title>
      <style>
          #map {
-             height: 100%;
-         }
-         html, body {
-             height: 100%;
-             margin: 0;
-             padding: 0;
+             height: 400px;
          }
      </style>
  </head>
  <body>
      <div id="map"></div>
+     <div id="ratings"></div>
      <script src="https://maps.googleapis.com/maps/api/js?key="></script>
      <script>
          // Define the waterpoint data as a variable
@@ -65,12 +61,24 @@
                      return distance < 1000; // Filter waterpoints within 1 km of the user's location
                  });
  
-                 // Add markers for the filtered waterpoints
+                 // Add markers for the filtered waterpoints and get their ratings
+                 var ratingsHTML = '<ul>';
                  for (var i = 0; i < filteredWaterpoints.length; i++) {
                      var marker = new google.maps.Marker({
                          position: { lat: filteredWaterpoints[i].lat, lng: filteredWaterpoints[i].lng },
                          map: map,
                          title: filteredWaterpoints[i].name
+                     });
+ 
+                     var request = {
+                         placeId: 'ChIJN1t_tDeuEmsRUsoyG83frY4' // Replace with your own Place ID from Google Maps
+                     };
+                     var service = new google.maps.places.PlacesService(map);
+                     service.getDetails(request, function(place, status) {
+                         if (status == google.maps.places.PlacesServiceStatus.OK) {
+                             ratingsHTML += '<li>' + place.name + ': ' + place.rating + '</li>';
+                         }
+                         document.getElementById('ratings').innerHTML = ratingsHTML + '</ul>';
                      });
                  }
              });
